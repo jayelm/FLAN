@@ -15,28 +15,25 @@
 """Constants."""
 
 import os
+
 import seqio
 import t5.data
 
-CACHE_DIRS = [os.path.join(os.path.dirname(__file__), 'cached_tasks')]
+CACHE_DIRS = [os.path.join(os.path.dirname(__file__), "cached_tasks")]
 
 DEFAULT_OUTPUT_FEATURES = {
-    'inputs':
-        seqio.Feature(
-            vocabulary=t5.data.get_default_vocabulary(),
-            add_eos=True,
-            required=False),
-    'targets':
-        seqio.Feature(
-            vocabulary=t5.data.get_default_vocabulary(), add_eos=True)
+    "inputs": seqio.Feature(
+        vocabulary=t5.data.get_default_vocabulary(), add_eos=True, required=False
+    ),
+    "targets": seqio.Feature(vocabulary=t5.data.get_default_vocabulary(), add_eos=True),
 }
 
 
 FEW_SHOT_MAX_LEN = 1920
-SEQUENCE_LEN = {'inputs': 2048, 'targets': 512}
+SEQUENCE_LEN = {"inputs": 2048, "targets": 512}
 
 # All train tasks will be defined for each set of features.
 TRAIN_TASK_SUFFIXES_AND_FEATURES = [
-    ('', DEFAULT_OUTPUT_FEATURES),
+    ("", DEFAULT_OUTPUT_FEATURES),
 ]
 TRAIN_TASK_SUFFIXES = [x for x, _ in TRAIN_TASK_SUFFIXES_AND_FEATURES]

@@ -18,10 +18,16 @@
 
 PATTERNS = {
     "anli": [
-        ("{context}\nquestion: {hypothesis} Is it true, false or neither?\nanswer:", "{glm_answer}"),
+        (
+            "{context}\nquestion: {hypothesis} Is it true, false or neither?\nanswer:",
+            "{glm_answer}",
+        ),
     ],
     "cb": [
-        ("{premise}\nquestion: {hypothesis} Is it true, false or neither?\nanswer:", "{glm_answer}"),
+        (
+            "{premise}\nquestion: {hypothesis} Is it true, false or neither?\nanswer:",
+            "{glm_answer}",
+        ),
     ],
     "rte": [
         ("{premise}\nquestion: {hypothesis} True or false?\nanswer:", "{glm_answer}"),
@@ -51,7 +57,10 @@ PATTERNS = {
         ("{passage} {query}", "{answer}"),
     ],
     "multirc": [
-        ("READING COMPREHENSION ANSWER KEY\n{paragraph}\n\n{question}", "[{glm_answer}] {response}"),
+        (
+            "READING COMPREHENSION ANSWER KEY\n{paragraph}\n\n{question}",
+            "[{glm_answer}] {response}",
+        ),
     ],
     "winogrande": [
         ("{context}", "{answer}"),

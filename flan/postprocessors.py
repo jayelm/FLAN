@@ -18,26 +18,26 @@ import tensorflow.compat.v1 as tf
 
 
 def remove_leading_quotes_and_spaces(s):
-  if len(s) < 1:
-    return s
-  s_copy = str(s)
-  while s_copy and not s_copy[0].isalpha():
-    s_copy = s_copy[1:]
-  return s_copy
+    if len(s) < 1:
+        return s
+    s_copy = str(s)
+    while s_copy and not s_copy[0].isalpha():
+        s_copy = s_copy[1:]
+    return s_copy
 
 
 def parse_glm_qa_answer(answer, example=None, is_target=False):
-  """Returns answer, or a dict with answers and context if the example is provided."""
+    """Returns answer, or a dict with answers and context if the example is provided."""
 
-  if is_target:
-    if 'answers' in example:
-      return [tf.compat.as_text(a) for a in example['answers']]
-    return answer
+    if is_target:
+        if "answers" in example:
+            return [tf.compat.as_text(a) for a in example["answers"]]
+        return answer
 
-  # Take the answer up until the next question.
-  # clean_answer = answer.split('\n')[0]  # Answer should be one line.
-  clean_answer = answer.split('Q:')[0]  # trivia_qa, translation, etc
-  clean_answer = clean_answer.split('Concepts:')[0]  # common_gen
-  clean_answer = clean_answer.split('Data:')[0]  # dart, e2e_nlg, web_nlg_en
+    # Take the answer up until the next question.
+    # clean_answer = answer.split('\n')[0]  # Answer should be one line.
+    clean_answer = answer.split("Q:")[0]  # trivia_qa, translation, etc
+    clean_answer = clean_answer.split("Concepts:")[0]  # common_gen
+    clean_answer = clean_answer.split("Data:")[0]  # dart, e2e_nlg, web_nlg_en
 
-  return remove_leading_quotes_and_spaces(clean_answer)
+    return remove_leading_quotes_and_spaces(clean_answer)
