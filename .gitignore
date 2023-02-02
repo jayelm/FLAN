@@ -9,3 +9,4 @@ results.json.backup*
 .DS_Store
 .vscode/
 env/
+FLAN.egg-info
