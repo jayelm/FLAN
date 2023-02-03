@@ -18,16 +18,17 @@ import re
 from typing import Dict, Iterable, Mapping, Sequence
 
 import numpy as np
-import seqio
 import t5
 import tensorflow as tf
+from flan.v2 import templates
 from t5.data import preprocessors as t5_prep
 
-from flan.v2 import templates
+import seqio
 
 # NB: We use the whitespace `stripped` version of these option enumerators
 # as the targets for eval sets with answer options.
 CHAR_OPTIONS = tf.constant([f"({chr(x)})" for x in range(ord("A"), ord("Z") + 1)])
+NUM_GIST_TOKENS = 2
 
 
 def tokenize(
@@ -82,7 +83,9 @@ def format_from_feature_dictionary(format_string, feature_dictionary):
     parts = [p for p in re.split(r"({\w*})", format_string) if p]
     any_tensors = False
     for part in parts:
-        if part[0] == "{" and part[-1] == "}":
+        if part == "{gist}":
+            to_join.append("<GIST>" * NUM_GIST_TOKENS)
+        elif part[0] == "{" and part[-1] == "}":
             t = feature_dictionary[part[1:-1]]
             if t.dtype != tf.string:
                 t = tf.strings.as_string(t)

@@ -3581,28 +3581,31 @@ PATTERNS = {
     # Not in FLAN Templates (flan_templates):
     # NB: ALL NatInstV2 tasks come somewhat pre-templatized.
     "natinst_v2": [
-        ("{Definition}\n\n{input}", "{output}"),
+        ("{Definition}\n\n{gist}{input}", "{output}"),
         (
             "You will be given a definition of a task first, then some input of "
-            "the task.\n{Definition}\n\n{input}\nOutput:",
+            "the task.\n{Definition}\n\n{gist}{input}\nOutput:",
             "{output}",
         ),
-        ("Definition: {Definition}\nInput: {input}\nOutput:", "{output}"),
-        ("Instructions: {Definition}\nInput: {input}\nOutput:", "{output}"),
-        ("{Definition}\nQ: {input}\nA: ", "{output}"),
+        ("Definition: {Definition}\nInput: {gist}{input}\nOutput:", "{output}"),
+        ("Instructions: {Definition}\nInput: {gist}{input}\nOutput:", "{output}"),
+        ("{Definition}\nQ: {gist}{input}\nA: ", "{output}"),
         (
             "Given the task definition and input, reply with output. "
-            "{Definition}\n\n{input}\n",
+            "{Definition}\n\n{gist}{input}\n",
             "{output}",
         ),
         (
             "Teacher:{Definition}\nTeacher: Now, understand the problem? Solve "
-            "this instance: {input}\nStudent:",
+            "this instance: {gist}{input}\nStudent:",
             "{output}",
         ),
-        ("Q: {Definition}\n{input}\nA:", "{output}"),
-        ("Detailed Instructions: {Definition}\nProblem:{input}\nSolution:", "{output}"),
-        ("Detailed Instructions: {Definition}\nQ: {input}\nA:", "{output}"),
+        ("Q: {Definition}\n{gist}{input}\nA:", "{output}"),
+        (
+            "Detailed Instructions: {Definition}\nProblem:{gist}{input}\nSolution:",
+            "{output}",
+        ),
+        ("Detailed Instructions: {Definition}\nQ: {gist}{input}\nA:", "{output}"),
     ],
 }
 
