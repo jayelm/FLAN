@@ -7,5 +7,5 @@ setup(
     author="John Doe",
     author_email="jdoe@example.com",
     packages=["flan"],
-    install_requires=[],
+    install_requires=["frozendict"],
 )
