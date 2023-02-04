@@ -29,6 +29,9 @@ import seqio
 
 DEFAULT_OUTPUT_FEATURES = constants.DEFAULT_OUTPUT_FEATURES
 NATINST_META_DATA = constants_niv2.NATINST_META_DATA
+NATINST_DEFAULT_TEST_TASKS = constants_niv2.NATINST_DEFAULT_TEST_TASKS
+NATINST_DEFAULT_TEST_IDS = constants_niv2.NATINST_DEFAULT_TEST_IDS
+NATINST_DEFAULT_TEST_IDS_SMALL = constants_niv2.NATINST_DEFAULT_TEST_IDS_SMALL
 TaskConfig = task_configs_v1.TaskConfig
 
 FLAN_V0_TASK_CONFIGS = utils.reset_split_maxes_on_flan_v0_configs(
@@ -200,6 +203,29 @@ niv2_posex_exp_lookup = tf.lookup.StaticHashTable(
     tf.lookup.KeyValueTensorInitializer(tf.constant(niv2_keys), tf.constant(niv2_exps)),
     default_value="",
 )
+# Maps to True if the task is a test task.
+niv2_test_task_lookup = tf.lookup.StaticHashTable(
+    tf.lookup.KeyValueTensorInitializer(
+        tf.constant(NATINST_DEFAULT_TEST_TASKS),
+        tf.constant([True] * len(NATINST_DEFAULT_TEST_TASKS)),
+    ),
+    default_value=False,
+)
+# Maps to True if the task is part of the balanced subsampled split.
+niv2_test_id_lookup = tf.lookup.StaticHashTable(
+    tf.lookup.KeyValueTensorInitializer(
+        tf.constant(NATINST_DEFAULT_TEST_IDS),
+        tf.constant([True] * len(NATINST_DEFAULT_TEST_IDS)),
+    ),
+    default_value=False,
+)
+niv2_small_test_id_lookup = tf.lookup.StaticHashTable(
+    tf.lookup.KeyValueTensorInitializer(
+        tf.constant(NATINST_DEFAULT_TEST_IDS_SMALL),
+        tf.constant([True] * len(NATINST_DEFAULT_TEST_IDS_SMALL)),
+    ),
+    default_value=False,
+)
 
 NIV2_MMLU_TASK_KEYS = tf.constant(
     [
@@ -208,6 +234,39 @@ NIV2_MMLU_TASK_KEYS = tf.constant(
         if int(k.split("_")[0].replace("task", "")) in list(range(685, 738))
     ]
 )
+
+
+def filter_natinst_split_fn(dataset, split):
+    """Filter test tasks."""
+    assert split in {"train", "test"}
+
+    def filter_func(example):
+        is_test_task = niv2_test_task_lookup.lookup(example["task_name"])
+        if split == "train":
+            return not is_test_task
+        return is_test_task
+
+    return dataset.filter(filter_func)
+
+
+def filter_natinst_test_ids_fn(dataset):
+    """Filter examples in the balanced subsampled natinst test set."""
+
+    def filter_func(example):
+        return niv2_test_id_lookup.lookup(example["id"])
+
+    return dataset.filter(filter_func)
+
+
+def filter_natinst_test_ids_fn_small(dataset):
+    """Filter examples in the balanced subsampled natinst test set.
+    Even smaller, for debugging.
+    """
+
+    def filter_func(example):
+        return niv2_small_test_id_lookup.lookup(example["id"])
+
+    return dataset.filter(filter_func)
 
 
 def filter_mmlu_fn(dataset):
@@ -250,11 +309,12 @@ NIV2_TRAIN_TASK_CONFIGS["train_tfds_natural_instructions"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="natural_instructions:1.0.1",
         tfds_data_dir=None,
-        splits={"train": "train[10:]"},
+        splits=["train"],
     ),
     preprocessors=[
-        # Don't filter MMLU for the full train split.
-        # filter_mmlu_fn,
+        # Don't filter by MMLU, like in the task above; instead filter using the
+        # Tk-instruct train split.
+        functools.partial(filter_natinst_split_fn, split="train"),
         lookup_posex_fn,
     ],
     postprocess_fn=None,
@@ -267,12 +327,11 @@ NIV2_EVAL_TASK_CONFIGS["eval_tfds_natural_instructions"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="natural_instructions:1.0.1",
         tfds_data_dir=None,
-        splits={"train": "train[:20]"},
+        splits=["train"],
     ),
     preprocessors=[
-        # Don't filter MMLU for the full eval split.
-        # THIS IS HOW YOU FILTER FOR TRAIN/EVAL TASKS!
-        # filter_mmlu_fn,
+        # Use the 100 balanced sampled examples from the test split
+        filter_natinst_test_ids_fn_small,
         lookup_posex_fn,
     ],
     postprocess_fn=None,

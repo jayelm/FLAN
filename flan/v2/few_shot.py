@@ -17,10 +17,10 @@ import enum
 import functools
 from typing import Optional
 
-import seqio
 import tensorflow as tf
-
 from flan.v2 import preprocessors as prep
+
+import seqio
 
 
 class ShotConfig(enum.Enum):
