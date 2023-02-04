@@ -12808,6 +12808,7 @@ for t_name, templates in FEWSHOT_PATTERNS_NO_OPTIONS.items():
 
 INLINE_FS_PATTERNS = {
     "natinst_v2": [
+        # ORIGINAL FS PATTERNS
         (
             "You will be given a definition of a task first, then an example. "
             "Follow the example to solve a new instance of the task.\n"
@@ -12874,6 +12875,71 @@ INLINE_FS_PATTERNS = {
             "One example is below.\n"
             "Q: {ex_input}\nA: {ex_output}\n"
             "Rationale: {ex_explanation}\n"
+            "Q: {input}\nA:",
+            "{output}",
+        ),
+        # <GIST>: FS PATTERNS WITHOUT EXPLANATIONS
+        (
+            "You will be given a definition of a task first, then an example. "
+            "Follow the example to solve a new instance of the task.\n"
+            "{Definition}\n\n{ex_input}\nSolution: {ex_output}\n\n"
+            "New input: {input}\nSolution:",
+            "{output}",
+        ),
+        (
+            "Given the task definition, example input & output, solve the new "
+            "input case.\n{Definition}\nExample: {ex_input}\nOutput: "
+            "{ex_output}\n\n"
+            "New input case for you: {input}\nOutput:",
+            "{output}",
+        ),
+        (
+            "Teacher: {Definition}\nTeacher: Now, understand the problem? If "
+            "you are still confused, see the following example:\n"
+            "{ex_input}\nSolution: {ex_output}\n\n"
+            "Now, solve this instance: {input}\nStudent:",
+            "{output}",
+        ),
+        (
+            "{Definition}\n\nExample input: {ex_input}\nExample output: "
+            "{ex_output}\nQ: {input}\nA:",
+            "{output}",
+        ),
+        (
+            "Detailed Instructions: {Definition}\nSee one example below:\n"
+            "Problem: {ex_input}\nSolution: {ex_output}\n\n"
+            "Problem: {input}\nSolution:",
+            "{output}",
+        ),
+        (
+            "{Definition}\nExample: {ex_input}\nExample solution: {ex_output}\n\n"
+            "Problem: {input}\n",
+            "Solution: {output}",
+        ),
+        (
+            "{Definition}\nOne example: {ex_input}\nSolution is here: {ex_output}\n\n"
+            "Now, solve this: {input}\n"
+            "Solution:",
+            "{output}",
+        ),
+        (
+            "Part 1. Definition\n{Definition}\n"
+            "Part 2. Example\n{ex_input}\n"
+            "Answer: {ex_output}\n"
+            "Part 3. Exercise\n{input}\nAnswer:",
+            "{output}",
+        ),
+        (
+            "{Definition}\n\n"
+            "Let me give you an example: {ex_input}\n"
+            "The answer to this example can be: {ex_output}\n\n"
+            "OK. solve this:\n{input}\nAnswer:",
+            "{output}",
+        ),
+        (
+            "{Definition}\n"
+            "One example is below.\n"
+            "Q: {ex_input}\nA: {ex_output}\n"
             "Q: {input}\nA:",
             "{output}",
         ),
