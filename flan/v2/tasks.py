@@ -277,6 +277,9 @@ for task_config in task_configs.ALL_NIV2_TASK_CONFIGS:
     for t_name, config in task_config.items():
         flan_pattern_name = utils.t_name_to_flan_pattern_name(t_name)
         mixed_templates = templates.INLINE_FS_PATTERNS[flan_pattern_name]
+        # FIXME: <GIST>. The x shot templates are completely broken, the
+        # examples are coming from random parts of the dataset without regard to
+        # the actual task.
         x_shot_templates = templates.FEWSHOT_PATTERNS[flan_pattern_name]
 
         # Task names:

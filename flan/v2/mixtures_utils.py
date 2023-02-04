@@ -67,6 +67,10 @@ FS_OPT_TEMPLATES = [
     "{t_name}_template_mix_five_shot{suffix}",
     "{t_name}_template_0to10_x_shot{suffix}",
 ]
+FS_OPT_TEMPLATES_NIV2 = [
+    # For NIV2, x_shot is broken.
+    "{t_name}_template_mix_five_shot{suffix}",
+]
 FS_NOOPT_TEMPLATES = [
     "{t_name}_template_0to10_no_opt_x_shot{suffix}",
 ]
@@ -211,7 +215,9 @@ def register_submixture_variants(
         mix_ex_cap=submix_ex_caps[submix_key],
         task_suffix=tsuffix,
         tasks_obj=submix_task_names,
-        templates=FS_OPT_TEMPLATES,
+        templates=FS_OPT_TEMPLATES
+        if "NIv2" not in submix_key
+        else FS_OPT_TEMPLATES_NIV2,
         filter_fn=DEFAULT_MIXTURE_TASK_FILTERS[submix_key],
     )
 
