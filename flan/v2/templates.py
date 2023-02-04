@@ -12814,43 +12814,43 @@ INLINE_FS_PATTERNS = {
             "Follow the example to solve a new instance of the task.\n"
             "{Definition}\n\n{ex_input}\nSolution: {ex_output}\n"
             "Why? {ex_explanation}\n\n"
-            "New input: {input}\nSolution:",
+            "New input: {gist}{input}\nSolution:",
             "{output}",
         ),
         (
             "Given the task definition, example input & output, solve the new "
             "input case.\n{Definition}\nExample: {ex_input}\nOutput: "
             "{ex_output}\n{ex_explanation}\n\n"
-            "New input case for you: {input}\nOutput:",
+            "New input case for you: {gist}{input}\nOutput:",
             "{output}",
         ),
         (
             "Teacher: {Definition}\nTeacher: Now, understand the problem? If "
             "you are still confused, see the following example:\n"
             "{ex_input}\nSolution: {ex_output}\nReason: {ex_explanation}\n\n"
-            "Now, solve this instance: {input}\nStudent:",
+            "Now, solve this instance: {gist}{input}\nStudent:",
             "{output}",
         ),
         (
             "{Definition}\n\nExample input: {ex_input}\nExample output: "
-            "{ex_output}\nExample explanation: {ex_explanation}\nQ: {input}\nA:",
+            "{ex_output}\nExample explanation: {ex_explanation}\nQ: {gist}{input}\nA:",
             "{output}",
         ),
         (
             "Detailed Instructions: {Definition}\nSee one example below:\n"
             "Problem: {ex_input}\nSolution: {ex_output}\n"
             "Explanation: {ex_explanation}\n\n"
-            "Problem: {input}\nSolution:",
+            "Problem: {gist}{input}\nSolution:",
             "{output}",
         ),
         (
             "{Definition}\nExample: {ex_input}\nExample solution: {ex_output}\n"
-            "Example explanation: {ex_explanation}\n\nProblem: {input}\n",
+            "Example explanation: {ex_explanation}\n\nProblem: {gist}{input}\n",
             "Solution: {output}",
         ),
         (
             "{Definition}\nOne example: {ex_input}\nSolution is here: {ex_output}"
-            "\nExplanation: {ex_explanation}\n\nNow, solve this: {input}\n"
+            "\nExplanation: {ex_explanation}\n\nNow, solve this: {gist}{input}\n"
             "Solution:",
             "{output}",
         ),
@@ -12859,7 +12859,7 @@ INLINE_FS_PATTERNS = {
             "Part 2. Example\n{ex_input}\n"
             "Answer: {ex_output}\n"
             "Explanation: {ex_explanation}\n"
-            "Part 3. Exercise\n{input}\nAnswer:",
+            "Part 3. Exercise\n{gist}{input}\nAnswer:",
             "{output}",
         ),
         (
@@ -12867,7 +12867,7 @@ INLINE_FS_PATTERNS = {
             "Let me give you an example: {ex_input}\n"
             "The answer to this example can be: {ex_output}\n"
             "Here is why: {ex_explanation}\n\n"
-            "OK. solve this:\n{input}\nAnswer:",
+            "OK. solve this:\n{gist}{input}\nAnswer:",
             "{output}",
         ),
         (
@@ -12875,7 +12875,7 @@ INLINE_FS_PATTERNS = {
             "One example is below.\n"
             "Q: {ex_input}\nA: {ex_output}\n"
             "Rationale: {ex_explanation}\n"
-            "Q: {input}\nA:",
+            "Q: {gist}{input}\nA:",
             "{output}",
         ),
         # <GIST>: FS PATTERNS WITHOUT EXPLANATIONS
@@ -12883,42 +12883,42 @@ INLINE_FS_PATTERNS = {
             "You will be given a definition of a task first, then an example. "
             "Follow the example to solve a new instance of the task.\n"
             "{Definition}\n\n{ex_input}\nSolution: {ex_output}\n\n"
-            "New input: {input}\nSolution:",
+            "New input: {gist}{input}\nSolution:",
             "{output}",
         ),
         (
             "Given the task definition, example input & output, solve the new "
             "input case.\n{Definition}\nExample: {ex_input}\nOutput: "
             "{ex_output}\n\n"
-            "New input case for you: {input}\nOutput:",
+            "New input case for you: {gist}{input}\nOutput:",
             "{output}",
         ),
         (
             "Teacher: {Definition}\nTeacher: Now, understand the problem? If "
             "you are still confused, see the following example:\n"
             "{ex_input}\nSolution: {ex_output}\n\n"
-            "Now, solve this instance: {input}\nStudent:",
+            "Now, solve this instance: {gist}{input}\nStudent:",
             "{output}",
         ),
         (
             "{Definition}\n\nExample input: {ex_input}\nExample output: "
-            "{ex_output}\nQ: {input}\nA:",
+            "{ex_output}\nQ: {gist}{input}\nA:",
             "{output}",
         ),
         (
             "Detailed Instructions: {Definition}\nSee one example below:\n"
             "Problem: {ex_input}\nSolution: {ex_output}\n\n"
-            "Problem: {input}\nSolution:",
+            "Problem: {gist}{input}\nSolution:",
             "{output}",
         ),
         (
             "{Definition}\nExample: {ex_input}\nExample solution: {ex_output}\n\n"
-            "Problem: {input}\n",
+            "Problem: {gist}{input}\n",
             "Solution: {output}",
         ),
         (
             "{Definition}\nOne example: {ex_input}\nSolution is here: {ex_output}\n\n"
-            "Now, solve this: {input}\n"
+            "Now, solve this: {gist}{input}\n"
             "Solution:",
             "{output}",
         ),
@@ -12926,21 +12926,21 @@ INLINE_FS_PATTERNS = {
             "Part 1. Definition\n{Definition}\n"
             "Part 2. Example\n{ex_input}\n"
             "Answer: {ex_output}\n"
-            "Part 3. Exercise\n{input}\nAnswer:",
+            "Part 3. Exercise\n{gist}{input}\nAnswer:",
             "{output}",
         ),
         (
             "{Definition}\n\n"
             "Let me give you an example: {ex_input}\n"
             "The answer to this example can be: {ex_output}\n\n"
-            "OK. solve this:\n{input}\nAnswer:",
+            "OK. solve this:\n{gist}{input}\nAnswer:",
             "{output}",
         ),
         (
             "{Definition}\n"
             "One example is below.\n"
             "Q: {ex_input}\nA: {ex_output}\n"
-            "Q: {input}\nA:",
+            "Q: {gist}{input}\nA:",
             "{output}",
         ),
     ],
