@@ -14,10 +14,10 @@
 
 """Sub-mixtures and the final mixture."""
 
-import seqio
-
 from flan.v2 import tasks  # pylint: disable=unused-import
 from flan.v2 import constants, constants_t0, mixtures_utils
+
+import seqio
 
 seqio.add_global_cache_dirs(constants.CACHE_DIRS)
 
@@ -26,7 +26,10 @@ DEFAULT_MIXTURE_MAX_EXAMPLES = {
     "FLAN": 30000,
     "T0": 20000,
     "CoT": 100000,
-    "NIv2": 5000,
+    # <GIST> Make this arbitrarily high, I think? We want to finetune on the full NIv2 dataset.
+    "NIv2": 3_000_000_000,
+    "NIv2-Train": 3_000_000_000,
+    "NIv2-Eval": 3_000_000_000,
     "Dialog": 200000,
 }
 DEFAULT_MIXTURE_MAX_EXAMPLES["CoT-II"] = DEFAULT_MIXTURE_MAX_EXAMPLES["CoT"]
@@ -49,6 +52,8 @@ DEFAULT_MIXTURE_TASK_FILTERS = {
     or constants_t0.T0_TRAIN_TASK_METADATA[x]["in_flan"],
     "CoT": None,
     "NIv2": lambda x: False,  # Always passes
+    "NIv2-Train": lambda x: False,  # Always passes
+    "NIv2-Eval": lambda x: False,  # Always passes
     "Dialog": lambda x: x not in ["wiki_dialog", "task_master", "qrecc"],
     "Dialog-II": lambda x: x
     not in [
@@ -61,7 +66,7 @@ DEFAULT_MIXTURE_TASK_FILTERS["CoT-II"] = DEFAULT_MIXTURE_TASK_FILTERS["CoT"]
 # pylint: enable=g-long-lambda
 
 # ----------------------- Sub-Mixture Definitions ----------------------- #
-for task in ["FLAN", "T0", "CoT", "Dialog", "NIv2"]:
+for task in ["FLAN", "T0", "CoT", "Dialog", "NIv2", "NIv2-Train", "NIv2-Eval"]:
     for setting, zs_ratio, opt_ratio in [
         ("ZSOpt", 1, 1),
         ("ZSNoOpt", 1, 0),

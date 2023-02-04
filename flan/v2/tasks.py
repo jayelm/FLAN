@@ -17,11 +17,11 @@ import copy
 import random
 from typing import List, Tuple
 
-import seqio
-
 from flan.v2 import constants, few_shot
 from flan.v2 import preprocessors as prep
 from flan.v2 import task_configs, templates, utils
+
+import seqio
 
 # All tasks will be defined for each set of features.
 ShotConfig = few_shot.ShotConfig
@@ -118,7 +118,7 @@ for t_name, config in task_configs.ALL_CANDIDATE_TASK_CONFIGS.items():
 NON_NIV2_TASK_CONFIGS = {
     k: v
     for k, v in task_configs.ALL_CANDIDATE_TASK_CONFIGS.items()
-    if k not in task_configs.NIV2_TASK_CONFIGS
+    if (not any(k in task_config for task_config in task_configs.ALL_NIV2_TASK_CONFIGS))
 }
 for t_name, config in NON_NIV2_TASK_CONFIGS.items():
     flan_pattern_name = utils.t_name_to_flan_pattern_name(t_name)
@@ -273,67 +273,73 @@ for t_name, config in NON_NIV2_TASK_CONFIGS.items():
                 strip_targets=True,
             )
 
-for t_name, config in task_configs.NIV2_TASK_CONFIGS.items():
-    flan_pattern_name = utils.t_name_to_flan_pattern_name(t_name)
-    mixed_templates = templates.INLINE_FS_PATTERNS[flan_pattern_name]
-    x_shot_templates = templates.FEWSHOT_PATTERNS[flan_pattern_name]
+for task_config in task_configs.ALL_NIV2_TASK_CONFIGS:
+    for t_name, config in task_config.items():
+        flan_pattern_name = utils.t_name_to_flan_pattern_name(t_name)
+        mixed_templates = templates.INLINE_FS_PATTERNS[flan_pattern_name]
+        x_shot_templates = templates.FEWSHOT_PATTERNS[flan_pattern_name]
 
-    # Task names:
-    # f'{t_name}_template_mix_five_shot{suffix}'
-    # f'{t_name}_template_mix_no_opt_five_shot{suffix}'
-    # The `_no_opt` version is not really used.
-    # This is not necessarily five shot. We name it five_shot so that it matches
-    # other few-shot task names. This makes it easy to use.
-    register_zero_shot_task(f"{t_name}_template_mix_five_shot", config, mixed_templates)
-    register_zero_shot_task(
-        f"{t_name}_template_mix_no_opt_five_shot", config, mixed_templates
-    )
-
-    # Build few-shot with non-deterministic templates.
-    # The #. of shots is non-deterministic too.
-    # We have 10 templates/task. So in average 2.5 shots/task.
-    num_shots_int = 25
-    fewshot_base_task_name = f"{t_name}_template_0to10"
-
-    all_patterns = []
-    for few_shot_pattern in x_shot_templates:
-        all_patterns.append(
-            (
-                few_shot_pattern.combined_inputs_w_target_prefix,
-                few_shot_pattern.combined_targets_wo_target_prefix,
-            )
-        )
-    all_formatter = prep.get_batch_formatter(all_patterns)
-
-    for task_suffix, task_output_features in constants.TRAIN_TASK_SUFFIXES_AND_FEATURES:
-        seqio.TaskRegistry.add(
-            fewshot_base_task_name + task_suffix,
-            source=config.source,
-            preprocessors=config.preprocessors + all_formatter + prep.FLAN_TOKENIZE,
-            postprocess_fn=config.postprocess_fn,
-            output_features=task_output_features,
-            metric_fns=config.metric_fns,
-        )
         # Task names:
-        # f'{t_name}_template_0to10_x_shot{suffix}'
-        # f'{t_name}_template_0to10_no_opt_x_shot{suffix}'
+        # f'{t_name}_template_mix_five_shot{suffix}'
+        # f'{t_name}_template_mix_no_opt_five_shot{suffix}'
         # The `_no_opt` version is not really used.
-        for opt_type_name in ["", "_no_opt"]:
-            few_shot.register_few_shot_version_of_task(
-                base_task_name=fewshot_base_task_name + task_suffix,
-                new_task_name=(
-                    fewshot_base_task_name + opt_type_name + "_x_shot" + task_suffix
-                ),
-                num_shots=num_shots_int,
-                prune_exemplars=True,
-                max_input_length=constants.FEW_SHOT_MAX_LEN,
-                prune_based_on_template_idx=True,
-                x_y_delimiter="",
-                inputs_prefix="",
-                targets_prefix="",
-                example_separator="",
-                strip_targets=True,
-                # We always use the 0th template's final_suffix and input_pattern.
-                final_suffix=x_shot_templates[0].final_suffix,
-                input_pattern=x_shot_templates[0].input_pattern,
+        # This is not necessarily five shot. We name it five_shot so that it matches
+        # other few-shot task names. This makes it easy to use.
+        register_zero_shot_task(
+            f"{t_name}_template_mix_five_shot", config, mixed_templates
+        )
+        register_zero_shot_task(
+            f"{t_name}_template_mix_no_opt_five_shot", config, mixed_templates
+        )
+
+        # Build few-shot with non-deterministic templates.
+        # The #. of shots is non-deterministic too.
+        # We have 10 templates/task. So in average 2.5 shots/task.
+        num_shots_int = 25
+        fewshot_base_task_name = f"{t_name}_template_0to10"
+
+        all_patterns = []
+        for few_shot_pattern in x_shot_templates:
+            all_patterns.append(
+                (
+                    few_shot_pattern.combined_inputs_w_target_prefix,
+                    few_shot_pattern.combined_targets_wo_target_prefix,
+                )
             )
+        all_formatter = prep.get_batch_formatter(all_patterns)
+
+        for (
+            task_suffix,
+            task_output_features,
+        ) in constants.TRAIN_TASK_SUFFIXES_AND_FEATURES:
+            seqio.TaskRegistry.add(
+                fewshot_base_task_name + task_suffix,
+                source=config.source,
+                preprocessors=config.preprocessors + all_formatter + prep.FLAN_TOKENIZE,
+                postprocess_fn=config.postprocess_fn,
+                output_features=task_output_features,
+                metric_fns=config.metric_fns,
+            )
+            # Task names:
+            # f'{t_name}_template_0to10_x_shot{suffix}'
+            # f'{t_name}_template_0to10_no_opt_x_shot{suffix}'
+            # The `_no_opt` version is not really used.
+            for opt_type_name in ["", "_no_opt"]:
+                few_shot.register_few_shot_version_of_task(
+                    base_task_name=fewshot_base_task_name + task_suffix,
+                    new_task_name=(
+                        fewshot_base_task_name + opt_type_name + "_x_shot" + task_suffix
+                    ),
+                    num_shots=num_shots_int,
+                    prune_exemplars=True,
+                    max_input_length=constants.FEW_SHOT_MAX_LEN,
+                    prune_based_on_template_idx=True,
+                    x_y_delimiter="",
+                    inputs_prefix="",
+                    targets_prefix="",
+                    example_separator="",
+                    strip_targets=True,
+                    # We always use the 0th template's final_suffix and input_pattern.
+                    final_suffix=x_shot_templates[0].final_suffix,
+                    input_pattern=x_shot_templates[0].input_pattern,
+                )

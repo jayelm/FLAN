@@ -18,14 +18,14 @@ import functools
 import os
 
 import frozendict
-import seqio
 import tensorflow as tf
-from t5.evaluation import metrics as t5_metrics
-
 from flan.v2 import constants, constants_niv2, constants_t0
 from flan.v2 import postprocessors as post
 from flan.v2 import preprocessors as prep
 from flan.v2 import task_configs_v1, utils
+from t5.evaluation import metrics as t5_metrics
+
+import seqio
 
 DEFAULT_OUTPUT_FEATURES = constants.DEFAULT_OUTPUT_FEATURES
 NATINST_META_DATA = constants_niv2.NATINST_META_DATA
@@ -38,6 +38,8 @@ COT_TASK_CONFIGS = {}
 DIALOG_TASK_CONFIGS = {}
 T0_TASK_CONFIGS = {}
 NIV2_TASK_CONFIGS = {}
+NIV2_TRAIN_TASK_CONFIGS = {}
+NIV2_EVAL_TASK_CONFIGS = {}
 COT_II_TASK_CONFIGS = {}
 DIALOG_II_TASK_CONFIGS = {}
 
@@ -243,14 +245,58 @@ NIV2_TASK_CONFIGS["tfds_natural_instructions"] = TaskConfig(
 )
 
 
+# <GIST>
+NIV2_TRAIN_TASK_CONFIGS["train_tfds_natural_instructions"] = TaskConfig(
+    source=seqio.TfdsDataSource(
+        tfds_name="natural_instructions:1.0.1",
+        tfds_data_dir=None,
+        splits={"train": "train[10:]"},
+    ),
+    preprocessors=[
+        # Don't filter MMLU for the full train split.
+        # filter_mmlu_fn,
+        lookup_posex_fn,
+    ],
+    postprocess_fn=None,
+    metric_fns=[],
+)
+
+
+# <GIST>
+NIV2_EVAL_TASK_CONFIGS["eval_tfds_natural_instructions"] = TaskConfig(
+    source=seqio.TfdsDataSource(
+        tfds_name="natural_instructions:1.0.1",
+        tfds_data_dir=None,
+        splits={"train": "train[:20]"},
+    ),
+    preprocessors=[
+        # Don't filter MMLU for the full eval split.
+        # THIS IS HOW YOU FILTER FOR TRAIN/EVAL TASKS!
+        # filter_mmlu_fn,
+        lookup_posex_fn,
+    ],
+    postprocess_fn=None,
+    metric_fns=[],
+)
+
+
 # =========== Freeze task configs ========== #
 FLAN_V0_TASK_CONFIGS = frozendict.frozendict(FLAN_V0_TASK_CONFIGS)
 COT_TASK_CONFIGS = frozendict.frozendict(COT_TASK_CONFIGS)
 DIALOG_TASK_CONFIGS = frozendict.frozendict(DIALOG_TASK_CONFIGS)
 T0_TASK_CONFIGS = frozendict.frozendict(T0_TASK_CONFIGS)
 NIV2_TASK_CONFIGS = frozendict.frozendict(NIV2_TASK_CONFIGS)
+NIV2_TRAIN_TASK_CONFIGS = frozendict.frozendict(NIV2_TRAIN_TASK_CONFIGS)
+NIV2_EVAL_TASK_CONFIGS = frozendict.frozendict(NIV2_EVAL_TASK_CONFIGS)
 COT_II_TASK_CONFIGS = frozendict.frozendict(COT_II_TASK_CONFIGS)
 DIALOG_II_TASK_CONFIGS = frozendict.frozendict(DIALOG_II_TASK_CONFIGS)
+
+
+ALL_NIV2_TASK_CONFIGS = (
+    NIV2_TASK_CONFIGS,
+    NIV2_TRAIN_TASK_CONFIGS,
+    NIV2_EVAL_TASK_CONFIGS,
+)  # <GIST>
 
 
 # =========== Define Non-Deterministic Tasks for Mixtures_utils.py ========== #
@@ -260,6 +306,8 @@ ALL_CANDIDATE_TASK_CONFIGS.update(COT_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS.update(DIALOG_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS.update(T0_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS.update(NIV2_TASK_CONFIGS)
+ALL_CANDIDATE_TASK_CONFIGS.update(NIV2_TRAIN_TASK_CONFIGS)
+ALL_CANDIDATE_TASK_CONFIGS.update(NIV2_EVAL_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS.update(COT_II_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS.update(DIALOG_II_TASK_CONFIGS)
 ALL_CANDIDATE_TASK_CONFIGS = frozendict.frozendict(ALL_CANDIDATE_TASK_CONFIGS)

@@ -18,9 +18,9 @@ import collections
 import functools
 import typing
 
-import seqio
-
 from flan.v2 import constants, constants_t0, task_configs
+
+import seqio
 
 TRAIN_TASK_SUFFIXES = constants.TRAIN_TASK_SUFFIXES
 UNIVERSAL_MIX_PREFIX = "palmflan"
@@ -32,6 +32,8 @@ DEFAULT_MIXTURE_TASKS = {
     "CoT": list(task_configs.COT_TASK_CONFIGS),
     "Dialog": list(task_configs.DIALOG_TASK_CONFIGS),
     "NIv2": list(task_configs.NIV2_TASK_CONFIGS),
+    "NIv2-Train": list(task_configs.NIV2_TRAIN_TASK_CONFIGS),
+    "NIv2-Eval": list(task_configs.NIV2_EVAL_TASK_CONFIGS),
     "CoT-II": list(task_configs.COT_II_TASK_CONFIGS),
     "Dialog-II": list(task_configs.DIALOG_II_TASK_CONFIGS),
 }
@@ -45,6 +47,8 @@ DEFAULT_MIXTURE_TASK_FILTERS = {
     or constants_t0.T0_TRAIN_TASK_METADATA[x]["in_flan"],
     "CoT": None,
     "NIv2": None,
+    "NIv2-Train": None,
+    "NIv2-Eval": None,
     "Dialog": lambda x: x not in ["wiki_dialog", "qrecc"],
     "Dialog-II": lambda x: x
     not in ["wiki_dialog_input_inversion", "qrecc_input_inversion"],
@@ -274,7 +278,7 @@ def generate_mixture_suites(
 
     Args:
       submixtures: List of submixtures names. Subset of `DEFAULT_MIXTURE_TASKS`:
-        'FLAN', 'T0', 'CoT', 'Dialog', 'NIv2'
+        'FLAN', 'T0', 'CoT', 'Dialog', 'NIv2', 'NIv2-Train', 'NIv2-Eval'
       submix_ex_caps: Dict submixture name to dataset example cap.
       submix_rates: Dict submixture name to top-level rate for that submixture
       ratio_zero_shot: ratio of zero shot to few shot. 1.0 is all zero shot. 0.0

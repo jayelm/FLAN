@@ -20,10 +20,10 @@ import re
 from typing import Any, Callable, Dict, List, Mapping
 
 import numpy as np
-import seqio
 import tensorflow as tf
-
 from flan.v2 import constants_t0, task_configs_v1
+
+import seqio
 
 TaskConfig = task_configs_v1.TaskConfig
 
@@ -357,7 +357,7 @@ def t_name_to_flan_pattern_name(t_name: str) -> str:
         mapped_name = "trivia_qa"
     elif t_name in constants_t0.T0_TRAIN_TASK_METADATA:
         mapped_name = str(constants_t0.T0_TRAIN_TASK_METADATA[t_name]["task_type"])
-    elif t_name == "tfds_natural_instructions":
+    elif "tfds_natural_instructions" in t_name:  # <GIST>
         mapped_name = "natinst_v2"
     elif t_name.replace("t0_", "") in constants_t0.T0_TRAIN_TASKS_ABBREV:
         mod_t_name = t_name.replace("t0_", "t0_task_adaptation:")
