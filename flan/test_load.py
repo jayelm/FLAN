@@ -43,3 +43,5 @@ seen_task_names = {t.decode("utf-8") for t in seen_task_names}
 NATINST_DEFAULT_TEST_TASKS = set(NATINST_DEFAULT_TEST_TASKS)
 print("Seen tasks not in test tasks:", seen_task_names - NATINST_DEFAULT_TEST_TASKS)
 print("Test tasks not in seen tasks:", NATINST_DEFAULT_TEST_TASKS - seen_task_names)
+# Assert intersection of seen and test tasks is empty.
+assert not (seen_task_names & NATINST_DEFAULT_TEST_TASKS)
