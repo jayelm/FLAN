@@ -32,6 +32,7 @@ NATINST_META_DATA = constants_niv2.NATINST_META_DATA
 NATINST_DEFAULT_TEST_TASKS = constants_niv2.NATINST_DEFAULT_TEST_TASKS
 NATINST_DEFAULT_TEST_IDS = constants_niv2.NATINST_DEFAULT_TEST_IDS
 NATINST_DEFAULT_TEST_IDS_SMALL = constants_niv2.NATINST_DEFAULT_TEST_IDS_SMALL
+NATINST_DEFAULT_TEST_IDS_MEDIUM = constants_niv2.NATINST_DEFAULT_TEST_IDS_MEDIUM
 TaskConfig = task_configs_v1.TaskConfig
 
 FLAN_V0_TASK_CONFIGS = utils.reset_split_maxes_on_flan_v0_configs(
@@ -226,6 +227,13 @@ niv2_small_test_id_lookup = tf.lookup.StaticHashTable(
     ),
     default_value=False,
 )
+niv2_medium_test_id_lookup = tf.lookup.StaticHashTable(
+    tf.lookup.KeyValueTensorInitializer(
+        tf.constant(NATINST_DEFAULT_TEST_IDS_MEDIUM),
+        tf.constant([True] * len(NATINST_DEFAULT_TEST_IDS_MEDIUM)),
+    ),
+    default_value=False,
+)
 
 NIV2_MMLU_TASK_KEYS = tf.constant(
     [
@@ -265,6 +273,17 @@ def filter_natinst_test_ids_fn_small(dataset):
 
     def filter_func(example):
         return niv2_small_test_id_lookup.lookup(example["id"])
+
+    return dataset.filter(filter_func)
+
+
+def filter_natinst_test_ids_fn_medium(dataset):
+    """Filter examples in the balanced subsampled natinst test set.
+    This is about 4x faster than the full test set.
+    """
+
+    def filter_func(example):
+        return niv2_medium_test_id_lookup.lookup(example["id"])
 
     return dataset.filter(filter_func)
 
@@ -331,7 +350,11 @@ NIV2_EVAL_TASK_CONFIGS["eval_tfds_natural_instructions"] = TaskConfig(
     ),
     preprocessors=[
         # Use the 100 balanced sampled examples from the test split
-        filter_natinst_test_ids_fn_small,
+        # Use `filter_natinst_test_ids_fn_small` or
+        # `filter_natinst_test_ids_fn_medium` for faster eval.
+        # filter_natinst_test_ids_fn_small,
+        # filter_natinst_test_ids_fn_medium,
+        filter_natinst_test_ids_fn,
         lookup_posex_fn,
     ],
     postprocess_fn=None,

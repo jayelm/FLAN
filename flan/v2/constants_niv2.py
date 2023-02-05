@@ -14,6 +14,7 @@
 
 """Constants related to NIv2."""
 # pylint: disable=line-too-long
+# noqa: E501
 
 
 # https://github.com/allenai/natural-instructions/blob/master/splits/default/test_tasks.txt
@@ -11952,7 +11953,7 @@ NATINST_DEFAULT_TEST_IDS = [
     "task102-07ff7def65a146c69d3459eb98fbb2c6",
     "task102-1c1168f3344c45c18a178f92327f6ecd",
 ]
-# 5 examples per task for debugging/faster eval.
+# 5 examples per task for 20x faster debugging/eval.
 NATINST_DEFAULT_TEST_IDS_SMALL = (
     NATINST_DEFAULT_TEST_IDS[0::100]
     + NATINST_DEFAULT_TEST_IDS[1::100]
@@ -11960,6 +11961,11 @@ NATINST_DEFAULT_TEST_IDS_SMALL = (
     + NATINST_DEFAULT_TEST_IDS[3::100]
     + NATINST_DEFAULT_TEST_IDS[4::100]
 )
+# 25 examples per task for 4x faster debugging/eval.
+NATINST_DEFAULT_TEST_IDS_MEDIUM = [NATINST_DEFAULT_TEST_IDS[i::100] for i in range(25)]
+NATINST_DEFAULT_TEST_IDS_MEDIUM = [
+    task for sublist in NATINST_DEFAULT_TEST_IDS_MEDIUM for task in sublist
+]
 
 
 NATINST_META_DATA = {
