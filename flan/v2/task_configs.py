@@ -353,8 +353,8 @@ NIV2_EVAL_TASK_CONFIGS["eval_tfds_natural_instructions"] = TaskConfig(
         # Use `filter_natinst_test_ids_fn_small` or
         # `filter_natinst_test_ids_fn_medium` for faster eval.
         # filter_natinst_test_ids_fn_small,
-        # filter_natinst_test_ids_fn_medium,
-        filter_natinst_test_ids_fn,
+        filter_natinst_test_ids_fn_medium,
+        # filter_natinst_test_ids_fn,
         lookup_posex_fn,
     ],
     postprocess_fn=None,
