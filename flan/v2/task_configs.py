@@ -335,7 +335,7 @@ NIV2_EVAL_TASK_CONFIGS["eval_tfds_natural_instructions"] = TaskConfig(
         lookup_posex_fn,
     ],
     postprocess_fn=None,
-    metric_fns=[],
+    metric_fns=[t5_metrics.rouge],
 )
 
 
