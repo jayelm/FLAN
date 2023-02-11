@@ -14,7 +14,9 @@
 
 """Seqio preprocessors."""
 import functools
+import os
 import re
+import warnings
 from typing import Dict, Iterable, Mapping, Sequence
 
 import numpy as np
@@ -28,7 +30,9 @@ import seqio
 # NB: We use the whitespace `stripped` version of these option enumerators
 # as the targets for eval sets with answer options.
 CHAR_OPTIONS = tf.constant([f"({chr(x)})" for x in range(ord("A"), ord("Z") + 1)])
-NUM_GIST_TOKENS = 2
+if "NUM_GIST_TOKENS" not in os.environ:
+    warnings.warn("NUM_GIST_TOKENS not set, defaulting to 10")
+NUM_GIST_TOKENS = os.environ.get("NUM_GIST_TOKENS", 10)
 
 
 def tokenize(
