@@ -19,10 +19,10 @@ import random
 from typing import List, Mapping, Optional, Sequence, Set
 
 import numpy as np
-import seqio
-
 from flan import few_shot
 from flan import tasks as flan_tasks  # pylint: disable=unused-import
+
+import seqio
 
 ShotConfig = few_shot.ShotConfig
 
@@ -44,13 +44,13 @@ _DEFAULT_TASK_CLUSTERS_ABBREV = collections.OrderedDict(
         (
             "summarization",
             [
-                "aeslc",
+                # "aeslc",
                 "cnn_dailymail",
                 "gigaword",
                 "multi_news",
-                "newsroom",
-                "samsum",
-                "xsum",
+                # "newsroom",
+                # "samsum",
+                # "xsum",
                 "ag_news_subset",
                 "opinion_abstracts_rotten_tomatoes",
                 "opinion_abstracts_idebate",
@@ -80,7 +80,7 @@ _DEFAULT_TASK_CLUSTERS_ABBREV = collections.OrderedDict(
         (
             "open_domain_qa",
             [
-                "trivia_qa",
+                # "trivia_qa",
                 "natural_questions",
                 "arc_challenge",
                 "arc_easy",
@@ -117,7 +117,7 @@ _DEFAULT_TASK_CLUSTERS_ABBREV = collections.OrderedDict(
             [
                 "copa",
                 "hellaswag",
-                "story_cloze",
+                # "story_cloze",
                 "piqa",
             ],
         ),
@@ -125,20 +125,20 @@ _DEFAULT_TASK_CLUSTERS_ABBREV = collections.OrderedDict(
             "translation",
             [
                 "para_crawl_enes",
-                "wmt14_enfr",
-                "wmt16_translate_deen",
-                "wmt16_translate_tren",
-                "wmt16_translate_csen",
-                "wmt16_translate_fien",
-                "wmt16_translate_roen",
-                "wmt16_translate_ruen",
+                # "wmt14_enfr",
+                # "wmt16_translate_deen",
+                # "wmt16_translate_tren",
+                # "wmt16_translate_csen",
+                # "wmt16_translate_fien",
+                # "wmt16_translate_roen",
+                # "wmt16_translate_ruen",
             ],
         ),
         (
             "coreference",
             [
                 "definite_pronoun_resolution",
-                "winogrande",
+                # "winogrande",
                 "wsc",
             ],
         ),
@@ -154,7 +154,7 @@ _DEFAULT_TASK_CLUSTERS_ABBREV = collections.OrderedDict(
                 "mnli_mismatched",
                 "qnli",
                 "wnli",
-                "snli",
+                # "snli",
             ],
         ),
         (

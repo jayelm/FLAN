@@ -16,11 +16,11 @@
 
 import functools
 
-import seqio
-
 from flan import tasks  # pylint: disable=unused-import
 from flan import templates  # pylint: disable=unused-import
 from flan import few_shot, task_splits
+
+import seqio
 
 mixing_rate_3k = functools.partial(seqio.mixing_rate_num_examples, maximum=3000)
 

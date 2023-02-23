@@ -264,26 +264,26 @@ PATTERNS = {
         ("Problem: {question}\nAnd the answer is...", "{answer}"),
         ("{question}. What is the answer??", "{answer}"),
     ],
-    "aeslc": [
-        ("What is the subject line for this email?\n\n{body}", "{subject}"),
-        ("Write a subject line for this message:\n\n{body}", "{subject}"),
-        ("{body}\nWrite a subject line for this email.", "{subject}"),
-        (
-            "Here is an email: {body}\nWhat is a potential subject line for this "
-            "email?",
-            "{subject}",
-        ),
-        ("{body}\nPropose a subject line for this email?", "{subject}"),
-        (
-            "This is the content of an email: {body}\nWhat was the subject line "
-            "for this email?",
-            "{subject}",
-        ),
-        ("This is an email\n{body}\n\nWhat is the subject of this email?", "{subject}"),
-        ("{body}\n\nGenerate a subject line for this email.", "{subject}"),
-        ("Write an email with the following subject:\n\n{subject}", "{body}"),
-        ('Write an email with the subject line "{subject}".', "{body}"),
-    ],
+    # "aeslc": [
+    #     ("What is the subject line for this email?\n\n{body}", "{subject}"),
+    #     ("Write a subject line for this message:\n\n{body}", "{subject}"),
+    #     ("{body}\nWrite a subject line for this email.", "{subject}"),
+    #     (
+    #         "Here is an email: {body}\nWhat is a potential subject line for this "
+    #         "email?",
+    #         "{subject}",
+    #     ),
+    #     ("{body}\nPropose a subject line for this email?", "{subject}"),
+    #     (
+    #         "This is the content of an email: {body}\nWhat was the subject line "
+    #         "for this email?",
+    #         "{subject}",
+    #     ),
+    #     ("This is an email\n{body}\n\nWhat is the subject of this email?", "{subject}"),
+    #     ("{body}\n\nGenerate a subject line for this email.", "{subject}"),
+    #     ("Write an email with the following subject:\n\n{subject}", "{body}"),
+    #     ('Write an email with the subject line "{subject}".', "{body}"),
+    # ],
     "cnn_dailymail": [
         ("Write highlights for this article:\n\n{text}", "{highlights}"),
         ("Write some highlights for the following article:\n\n{text}", "{highlights}"),

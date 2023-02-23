@@ -22,15 +22,15 @@ import dataclasses
 import functools
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
-import seqio
 import tensorflow.compat.v1 as tf
 import tqdm
+from flan.v2 import preprocessors as prep
 from t5.data import glue_utils
 from t5.data import postprocessors as t5_post
 from t5.data import preprocessors as t5_prep
 from t5.evaluation import metrics as t5_metrics
 
-from flan.v2 import preprocessors as prep
+import seqio
 
 
 @dataclasses.dataclass
@@ -380,22 +380,22 @@ def _filter_trivia_qa(dataset):
 
 
 # Using default 'rc' configuration. 'rc.nocontext' has the same examples.
-TASK_CONFIGS["trivia_qa"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="trivia_qa/rc:1.1.0",
-        splits={
-            "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
-            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
-            "test": "validation",
-        },
-    ),
-    preprocessors=[
-        _filter_trivia_qa,
-        _process_trivia_qa,
-    ],
-    postprocess_fn=t5_post.qa,
-    metric_fns=[t5_metrics.trivia_qa],
-)
+# TASK_CONFIGS["trivia_qa"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="trivia_qa/rc:1.1.0",
+#         splits={
+#             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
+#             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
+#             "test": "validation",
+#         },
+#     ),
+#     preprocessors=[
+#         _filter_trivia_qa,
+#         _process_trivia_qa,
+#     ],
+#     postprocess_fn=t5_post.qa,
+#     metric_fns=[t5_metrics.trivia_qa],
+# )
 
 
 # =============================== Arc ==========================================
@@ -488,22 +488,22 @@ def _filter_aeslc(dataset):
     return dataset.filter(my_fn)
 
 
-TASK_CONFIGS["aeslc"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="aeslc:1.0.0",
-        splits={
-            "train": "train",
-            "validation": f"validation[-{NUM_VAL_EXAMPLES}:]",
-            "test": "test",
-        },
-    ),
-    preprocessors=[
-        _filter_aeslc,
-        _process_aeslc,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.rouge],
-)
+# TASK_CONFIGS["aeslc"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="aeslc:1.0.0",
+#         splits={
+#             "train": "train",
+#             "validation": f"validation[-{NUM_VAL_EXAMPLES}:]",
+#             "test": "test",
+#         },
+#     ),
+#     preprocessors=[
+#         _filter_aeslc,
+#         _process_aeslc,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.rouge],
+# )
 
 
 # ============================== CNN Dailymail =================================
@@ -598,14 +598,14 @@ def _process_newsroom(example):
     }
 
 
-TASK_CONFIGS["newsroom"] = TaskConfig(
-    source=seqio.TfdsDataSource(tfds_name="newsroom:1.0.0", splits=SPLITS_DICT),
-    preprocessors=[
-        _process_newsroom,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.rouge],
-)
+# TASK_CONFIGS["newsroom"] = TaskConfig(
+#     source=seqio.TfdsDataSource(tfds_name="newsroom:1.0.0", splits=SPLITS_DICT),
+#     preprocessors=[
+#         _process_newsroom,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.rouge],
+# )
 
 
 # =================== Opinion Abstracts Rotten Tomatoes ========================
@@ -706,21 +706,21 @@ def _process_samsum(example):
     }
 
 
-TASK_CONFIGS["samsum"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="samsum:1.0.0",
-        splits={
-            "train": "train",
-            "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
-            "test": "test",
-        },
-    ),
-    preprocessors=[
-        _process_samsum,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.rouge],
-)
+# TASK_CONFIGS["samsum"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="samsum:1.0.0",
+#         splits={
+#             "train": "train",
+#             "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
+#             "test": "test",
+#         },
+#     ),
+#     preprocessors=[
+#         _process_samsum,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.rouge],
+# )
 
 
 # ============================== xsum ==========================================
@@ -732,14 +732,14 @@ def _process_xsum(example):
     }
 
 
-TASK_CONFIGS["xsum"] = TaskConfig(
-    source=seqio.TfdsDataSource(tfds_name="xsum:1.0.0", splits=SPLITS_DICT),
-    preprocessors=[
-        _process_xsum,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.rouge],
-)
+# TASK_CONFIGS["xsum"] = TaskConfig(
+#     source=seqio.TfdsDataSource(tfds_name="xsum:1.1.0", splits=SPLITS_DICT),
+#     preprocessors=[
+#         _process_xsum,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.rouge],
+# )
 
 
 # ============================== squad_v1 ======================================
@@ -1071,22 +1071,22 @@ def _process_story_cloze(example):
 
 
 # The other config, `2018` does not have correct labels in tfds.
-TASK_CONFIGS["story_cloze"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="story_cloze/2016:1.0.0",
-        splits={
-            "train": f"validation[:-{NUM_VAL_EXAMPLES}]",
-            "validation": f"validation[-{NUM_VAL_EXAMPLES}:]",
-            "test": "test",
-        },
-    ),
-    preprocessors=[
-        _process_story_cloze,
-        prep.format_options,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.accuracy],
-)
+# TASK_CONFIGS["story_cloze"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="story_cloze/2016:1.0.0",
+#         splits={
+#             "train": f"validation[:-{NUM_VAL_EXAMPLES}]",
+#             "validation": f"validation[-{NUM_VAL_EXAMPLES}:]",
+#             "test": "test",
+#         },
+#     ),
+#     preprocessors=[
+#         _process_story_cloze,
+#         prep.format_options,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.accuracy],
+# )
 
 
 # ============================== imdb_reviews ==================================
@@ -1211,7 +1211,7 @@ def _process_glue_mrpc(example):
 
 TASK_CONFIGS["glue_mrpc"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/mrpc:1.0.0",
+        tfds_name="glue/mrpc:2.0.0",
         splits={
             "train": f"train[:-{NUM_VAL_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1251,7 +1251,7 @@ def _process_glue_qqp(example):
 
 TASK_CONFIGS["glue_qqp"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/qqp:1.0.0",
+        tfds_name="glue/qqp:2.0.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1335,22 +1335,22 @@ def _process_winogrande(example):
     }
 
 
-TASK_CONFIGS["winogrande"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="winogrande:1.1.0",
-        splits={
-            "train": f"train_xl[:{NUM_TRAIN_EXAMPLES}]",
-            "validation": f"train_xl[-{NUM_VAL_EXAMPLES}:]",
-            "test": "validation",
-        },
-    ),
-    preprocessors=[
-        _process_winogrande,
-        prep.format_options,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.accuracy],
-)
+# TASK_CONFIGS["winogrande"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="winogrande:1.1.0",
+#         splits={
+#             "train": f"train_xl[:{NUM_TRAIN_EXAMPLES}]",
+#             "validation": f"train_xl[-{NUM_VAL_EXAMPLES}:]",
+#             "test": "validation",
+#         },
+#     ),
+#     preprocessors=[
+#         _process_winogrande,
+#         prep.format_options,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.accuracy],
+# )
 
 
 # ========================== yelp_polarity_reviews =============================
@@ -1496,16 +1496,16 @@ def _process_wmt14_translate_enfr(example):
     }
 
 
-TASK_CONFIGS["wmt14_enfr"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="wmt14_translate/fr-en:1.0.0", splits=WMT16_SPLITS_DICT
-    ),
-    preprocessors=[
-        _process_wmt14_translate_enfr,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.bleu],
-)
+# TASK_CONFIGS["wmt14_enfr"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="wmt14_translate/fr-en:1.0.0", splits=WMT16_SPLITS_DICT
+#     ),
+#     preprocessors=[
+#         _process_wmt14_translate_enfr,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.bleu],
+# )
 
 
 # ============================== wmt16 =========================================
@@ -1581,16 +1581,16 @@ wmt_language_to_process = {
 for k in wmt_language_to_process:
     l2, l1 = k.split("-")[0], k.split("-")[1]
 
-    TASK_CONFIGS[f"wmt16_translate_{l2}{l1}"] = TaskConfig(
-        source=seqio.TfdsDataSource(
-            tfds_name=f"wmt16_translate/{l2}-{l1}:1.0.0", splits=WMT16_SPLITS_DICT
-        ),
-        preprocessors=[
-            wmt_language_to_process[f"{l2}-{l1}"],
-        ],
-        postprocess_fn=None,
-        metric_fns=[t5_metrics.bleu],
-    )
+    # TASK_CONFIGS[f"wmt16_translate_{l2}{l1}"] = TaskConfig(
+    #     source=seqio.TfdsDataSource(
+    #         tfds_name=f"wmt16_translate/{l2}-{l1}:1.0.0", splits=WMT16_SPLITS_DICT
+    #     ),
+    #     preprocessors=[
+    #         wmt_language_to_process[f"{l2}-{l1}"],
+    #     ],
+    #     postprocess_fn=None,
+    #     metric_fns=[t5_metrics.bleu],
+    # )
 
 
 # ============================== common_gen ====================================
@@ -1609,7 +1609,7 @@ def _process_common_gen(example):
 
 TASK_CONFIGS["common_gen"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="gem/common_gen:1.0.0",
+        tfds_name="gem/common_gen:1.1.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1645,7 +1645,7 @@ def _process_dart(example):
 
 TASK_CONFIGS["dart"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="gem/dart:1.0.0",
+        tfds_name="gem/dart:1.1.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1679,7 +1679,7 @@ def _process_e2e_nlg(example):
 
 TASK_CONFIGS["e2e_nlg"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="gem/e2e_nlg:1.0.0",
+        tfds_name="gem/e2e_nlg:1.1.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1712,7 +1712,7 @@ def _process_web_nlg_en(example):
 
 TASK_CONFIGS["web_nlg_en"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="gem/web_nlg_en:1.0.0",
+        tfds_name="gem/web_nlg_en:1.1.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1901,7 +1901,7 @@ def _process_cola(example):
 
 TASK_CONFIGS["cola"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/cola:1.0.0",
+        tfds_name="glue/cola:2.0.0",
         splits={
             "train": f"train[:-{NUM_VAL_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1934,7 +1934,7 @@ def _process_sst2(example):
 
 TASK_CONFIGS["sst2"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/sst2:1.0.0",
+        tfds_name="glue/sst2:2.0.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1968,7 +1968,7 @@ def _process_mnli(example):
 
 TASK_CONFIGS["mnli_matched"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/mnli:1.0.0",
+        tfds_name="glue/mnli:2.0.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -1985,7 +1985,7 @@ TASK_CONFIGS["mnli_matched"] = TaskConfig(
 
 TASK_CONFIGS["mnli_mismatched"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/mnli:1.0.0",
+        tfds_name="glue/mnli:2.0.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -2021,7 +2021,7 @@ def _process_qnli(example):
 
 TASK_CONFIGS["qnli"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/qnli:1.0.0",
+        tfds_name="glue/qnli:2.0.0",
         splits={
             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
             "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
@@ -2055,7 +2055,7 @@ def _process_wnli(example):
 
 TASK_CONFIGS["wnli"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/wnli:1.0.0",
+        tfds_name="glue/wnli:2.0.0",
         splits={
             "train": "train[:-30]",
             "validation": "train[-30:]",
@@ -2100,23 +2100,23 @@ def _filter_snli(dataset):
     return dataset.filter(my_fn)
 
 
-TASK_CONFIGS["snli"] = TaskConfig(
-    source=seqio.TfdsDataSource(
-        tfds_name="snli:1.1.0",
-        splits={
-            "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
-            "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
-            "test": "test",
-        },
-    ),
-    preprocessors=[
-        _filter_snli,
-        _process_snli,
-        prep.format_options,
-    ],
-    postprocess_fn=None,
-    metric_fns=[t5_metrics.accuracy],
-)
+# TASK_CONFIGS["snli"] = TaskConfig(
+#     source=seqio.TfdsDataSource(
+#         tfds_name="snli:1.1.0",
+#         splits={
+#             "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
+#             "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
+#             "test": "test",
+#         },
+#     ),
+#     preprocessors=[
+#         _filter_snli,
+#         _process_snli,
+#         prep.format_options,
+#     ],
+#     postprocess_fn=None,
+#     metric_fns=[t5_metrics.accuracy],
+# )
 
 
 # ================================ TREC ========================================
@@ -2167,7 +2167,7 @@ def _process_stsb(example):
 
 TASK_CONFIGS["stsb"] = TaskConfig(
     source=seqio.TfdsDataSource(
-        tfds_name="glue/stsb:1.0.0",
+        tfds_name="glue/stsb:2.0.0",
         splits={
             "train": "train[:-100]",
             "validation": "train[-100:]",

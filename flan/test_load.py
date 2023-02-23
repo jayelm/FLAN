@@ -1,4 +1,5 @@
 import tqdm
+from flan import mixtures as mixtures_v1
 from flan.v2 import mixtures  # noqa
 from flan.v2.constants_niv2 import NATINST_DEFAULT_TEST_TASKS
 from transformers import AutoTokenizer
