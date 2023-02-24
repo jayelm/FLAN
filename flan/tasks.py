@@ -2101,8 +2101,8 @@ TASK_CONFIGS["stsb"] = _TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="glue/stsb:2.0.0",
         splits={
-            "train": "train[:-100]",
-            "validation": "train[-100:]",
+            "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
             "test": "validation",
         },
     ),

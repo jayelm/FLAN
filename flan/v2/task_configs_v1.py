@@ -681,8 +681,8 @@ TASK_CONFIGS["coqa"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="coqa:1.0.0",
         splits={
-            "train": "train[:-100]",
-            "validation": "train[-100:]",
+            "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
             "test": "test",
         },
     ),
@@ -1291,8 +1291,8 @@ def _process_copa(example):
 copa_source_args = {
     "tfds_name": "super_glue/copa:1.0.2",
     "splits": {
-        "train": "train[:-50]",
-        "validation": "train[-50:]",
+        "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+        "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
         "test": "validation",
     },
 }
@@ -2057,8 +2057,8 @@ TASK_CONFIGS["wnli"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="glue/wnli:2.0.0",
         splits={
-            "train": "train[:-30]",
-            "validation": "train[-30:]",
+            "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
             "test": "validation",
         },
     ),
@@ -2169,8 +2169,8 @@ TASK_CONFIGS["stsb"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="glue/stsb:2.0.0",
         splits={
-            "train": "train[:-100]",
-            "validation": "train[-100:]",
+            "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
             "test": "validation",
         },
     ),
@@ -2199,8 +2199,8 @@ TASK_CONFIGS["piqa"] = TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="piqa:1.0.0",
         splits={
-            "train": "train[:-100]",
-            "validation": "train[-100:]",
+            "train": f"train[:-{NUM_VAL_EXAMPLES}]",
+            "validation": f"train[-{NUM_VAL_EXAMPLES}:]",
             "test": "validation",
         },
     ),

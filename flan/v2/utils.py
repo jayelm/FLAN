@@ -316,7 +316,9 @@ def reset_split_maxes_on_flan_v0_configs(
             if reserve_exs:
                 new_split_map["train"] += f"[:-{reserve_exs}]"
         if val_split_idx != -1 and reserve_exs is None:
-            new_split_map["validation"] = new_split_map["validation"][:val_split_idx]
+            # Don't change the validation split
+            # new_split_map["validation"] = new_split_map["validation"][:val_split_idx]
+            pass
         if test_split_idx != -1 and reserve_exs is None:
             new_split_map["test"] = new_split_map["test"][:test_split_idx]
 
