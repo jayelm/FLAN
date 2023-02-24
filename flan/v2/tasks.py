@@ -34,10 +34,17 @@ def register_zero_shot_task(
     patterns: List[Tuple[str, str]],
 ):
     if len(patterns) == 1:
-        formatter = prep.get_formatter(patterns[0][0], patterns[0][1])
+        formatter = prep.get_formatter(
+            patterns[0][0],
+            patterns[0][1],
+            num_gist_tokens=10,
+            gist_position="random",
+        )
     else:
         # This batch formatter applies many prompts to a single task.
-        formatter = prep.get_batch_formatter(patterns)
+        formatter = prep.get_batch_formatter(patterns,
+                                             num_gist_tokens=10,
+                                             gist_position="random")
     for suffix, output_features in constants.TRAIN_TASK_SUFFIXES_AND_FEATURES:
         seqio.TaskRegistry.add(
             zero_shot_name + suffix,
@@ -151,7 +158,7 @@ for t_name, config in NON_NIV2_TASK_CONFIGS.items():
                     fewshot_base_task_name + task_suffix,
                     source=config.source,
                     preprocessors=config.preprocessors
-                    + prep.get_formatter(input_pattern, target_pattern)
+                    + prep.get_formatter(input_pattern, target_pattern, num_gist_tokens=10, gist_position="random")
                     + prep.FLAN_TOKENIZE,
                     postprocess_fn=config.postprocess_fn,
                     output_features=task_output_features,
@@ -190,9 +197,9 @@ for t_name, config in NON_NIV2_TASK_CONFIGS.items():
                 )
 
         if len(mix_patterns) == 1:
-            mix_formatter = prep.get_formatter(mix_patterns[0][0], mix_patterns[0][1])
+            mix_formatter = prep.get_formatter(mix_patterns[0][0], mix_patterns[0][1], num_gist_tokens=10, gist_position="random")
         elif len(mix_patterns) > 1:
-            mix_formatter = prep.get_batch_formatter(mix_patterns)
+            mix_formatter = prep.get_batch_formatter(mix_patterns, num_gist_tokens=10, gist_position="random")
         else:
             continue
 
@@ -242,7 +249,7 @@ for t_name, config in NON_NIV2_TASK_CONFIGS.items():
                     few_shot_pattern.combined_targets_wo_target_prefix,
                 )
             )
-        all_formatter = prep.get_batch_formatter(all_patterns)
+        all_formatter = prep.get_batch_formatter(all_patterns, num_gist_tokens=10, gist_position="random")
 
         for (
             task_suffix,
@@ -309,7 +316,7 @@ for task_config in task_configs.ALL_NIV2_TASK_CONFIGS:
                     few_shot_pattern.combined_targets_wo_target_prefix,
                 )
             )
-        all_formatter = prep.get_batch_formatter(all_patterns)
+        all_formatter = prep.get_batch_formatter(all_patterns, num_gist_tokens=10, gist_position="random")
 
         for (
             task_suffix,

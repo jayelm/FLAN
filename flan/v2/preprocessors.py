@@ -64,7 +64,7 @@ def tokenize(
     return dataset.map(my_fn, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 
 
-def format_from_feature_dictionary(format_string, feature_dictionary):
+def format_from_feature_dictionary(format_string, feature_dictionary, num_gist_tokens: int, gist_position: str, add_gist_token: bool = True):
     """Create strings based on a format string and a dictionary of tf.Tensors.
 
     If a key from feature_dictionary appears in curly-braces in format_string,
@@ -83,12 +83,18 @@ def format_from_feature_dictionary(format_string, feature_dictionary):
     """
     if not format_string:
         return ""
+    if gist_position not in {"random", "fixed"}:
+        raise ValueError(f"Invalid gist_position: {gist_position}")
+    gist_string = "<GIST>" * num_gist_tokens
     to_join = []
     parts = [p for p in re.split(r"({\w*})", format_string) if p]
     any_tensors = False
     for part in parts:
         if part == "{gist}":
-            to_join.append("<GIST>" * NUM_GIST_TOKENS)
+            if gist_position == "fixed" and add_gist_token:
+                to_join.append(gist_string)
+            else:
+                to_join.append("")
         elif part[0] == "{" and part[-1] == "}":
             t = feature_dictionary[part[1:-1]]
             if t.dtype != tf.string:
@@ -104,7 +110,18 @@ def format_from_feature_dictionary(format_string, feature_dictionary):
         to_join = [
             tf.zeros(tf.shape(list(feature_dictionary.values())[0]), dtype=tf.string)
         ] + to_join
-    return tf.strings.join(to_join)
+    joined = tf.strings.join(to_join)
+    if gist_position == "random" and add_gist_token:
+        joined_length = tf.strings.length(joined)
+        # Splice gist string in anywhere. Note this may break word boundaries,
+        # but whatever.
+        gist_index = tf.random.uniform(shape=[], minval=0, maxval=joined_length, dtype=tf.int32)
+        joined = tf.strings.join([
+            tf.strings.substr(joined, 0, gist_index),
+            gist_string,
+            tf.strings.substr(joined, gist_index, joined_length - gist_index)
+        ])
+    return joined
 
 
 def negate(dataset, keys, **unused_kwargs):
@@ -194,11 +211,11 @@ def shuffle_dataset(dataset: tf.data.Dataset, buffer_size=50000):
 
 
 @seqio.map_over_dataset
-def reformat_passthrough(example, format_strings):
+def reformat_passthrough(example, format_strings, num_gist_tokens: int, gist_position: str):
     """Reformat `example` and pass through existing features."""
     example.update(
         {
-            k: format_from_feature_dictionary(v, example)
+            k: format_from_feature_dictionary(v, example, num_gist_tokens, gist_position, add_gist_token=k != "targets")
             for k, v in format_strings.items()
         }
     )
@@ -237,7 +254,7 @@ def reformat_with_dialog_prompt(example):
     )
 
 
-def get_formatter(inputs_pattern, targets_pattern):
+def get_formatter(inputs_pattern, targets_pattern, num_gist_tokens: int, gist_position: str):
     """Formats inputs and targets by patterns."""
     return [
         functools.partial(
@@ -246,6 +263,8 @@ def get_formatter(inputs_pattern, targets_pattern):
                 "inputs": inputs_pattern,
                 "targets": targets_pattern,
             },
+            num_gist_tokens=num_gist_tokens,
+            gist_position=gist_position,
         ),
     ]
 
@@ -281,30 +300,30 @@ def example_list_to_batch(example_list):
     return d
 
 
-def reformat_single_example(example, patterns_list, i):
+def reformat_single_example(example, patterns_list, i, num_gist_tokens: int, gist_position: str):
     """Formats an example into inputs and targets."""
     inputs_pattern, targets_pattern = patterns_list[i]
     format_strings = {"inputs": inputs_pattern, "targets": targets_pattern}
     new_example = dict(example)
     for f_name, format_str in format_strings.items():
-        new_example[f_name] = format_from_feature_dictionary(format_str, example)
+        new_example[f_name] = format_from_feature_dictionary(format_str, example, num_gist_tokens=num_gist_tokens, gist_position=gist_position, add_gist_token=f_name != "targets")
     return new_example
 
 
-def reformat_batched_example(example_batch, patterns_list):
+def reformat_batched_example(example_batch, patterns_list, num_gist_tokens: int, gist_position: str):
     """Formats a batch of examples into inputs and targets."""
     example_list = example_batch_to_list(example_batch, len(patterns_list))
     reformatted_batch = [
-        reformat_single_example(example, patterns_list, i)
+        reformat_single_example(example, patterns_list, i, num_gist_tokens, gist_position)
         for i, example in enumerate(example_list)
     ]
     return example_list_to_batch(reformatted_batch)
 
 
-def batch_apply_template(dataset, patterns_list):
+def batch_apply_template(dataset, patterns_list, num_gist_tokens: int, gist_position: str):
     """Batch a dataset, apply the template to the batch, and then unbatch it."""
     apply_template_to_batch = functools.partial(
-        reformat_batched_example, patterns_list=patterns_list
+        reformat_batched_example, patterns_list=patterns_list, num_gist_tokens=num_gist_tokens, gist_position=gist_position,
     )
 
     # First, strip the dataset of unbatchable features.
@@ -363,10 +382,15 @@ def get_training_keys(patterns_list):
     return training_keys
 
 
-def get_batch_formatter(patterns_list):
+def get_batch_formatter(patterns_list, num_gist_tokens: int, gist_position: str):
     """This function applies several templates within a task."""
     return [
-        functools.partial(batch_apply_template, patterns_list=patterns_list),
+        functools.partial(
+        batch_apply_template,
+        patterns_list=patterns_list,
+            num_gist_tokens=num_gist_tokens,
+            gist_position=gist_position,
+        ),
     ]
 
 
