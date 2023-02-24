@@ -49,7 +49,7 @@ class TaskConfig:
 TASK_CONFIGS: Dict[str, TaskConfig] = {}
 
 NUM_TRAIN_EXAMPLES = 30000
-NUM_VAL_EXAMPLES = 20
+NUM_VAL_EXAMPLES = 96
 SPLITS_DICT = {
     "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
     "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
