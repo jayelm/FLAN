@@ -57,7 +57,7 @@ class _TaskConfig:
 
 
 NUM_TRAIN_EXAMPLES = 30000
-NUM_VAL_EXAMPLES = 200
+NUM_VAL_EXAMPLES = 20
 SPLITS_DICT = {
     "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
     "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
@@ -76,7 +76,7 @@ WMT16_SPLITS_DICT = {
     "test": "test",
 }
 
-NUM_VAL_EXAMPLES_WSC = 50
+NUM_VAL_EXAMPLES_WSC = 20
 WSC_SPLITS_DICT = {
     "train": f"train[:-{NUM_VAL_EXAMPLES_WSC}]",
     "validation": f"train[-{NUM_VAL_EXAMPLES_WSC}:]",
@@ -1817,7 +1817,7 @@ def _process_cb(example):
     }
 
 
-NUM_VAL_EXAMPLES_CB = 50
+NUM_VAL_EXAMPLES_CB = 20
 TASK_CONFIGS["cb"] = _TaskConfig(
     source=seqio.TfdsDataSource(
         tfds_name="super_glue/cb:1.0.2",

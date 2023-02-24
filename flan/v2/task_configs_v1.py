@@ -49,7 +49,7 @@ class TaskConfig:
 TASK_CONFIGS: Dict[str, TaskConfig] = {}
 
 NUM_TRAIN_EXAMPLES = 30000
-NUM_VAL_EXAMPLES = 200
+NUM_VAL_EXAMPLES = 20
 SPLITS_DICT = {
     "train": f"train[:{NUM_TRAIN_EXAMPLES}]",
     "validation": f"validation[:{NUM_VAL_EXAMPLES}]",
@@ -160,7 +160,7 @@ TASK_CONFIGS["rte"] = TaskConfig(
 )
 
 # =============================== Wsc ========================================
-NUM_VAL_EXAMPLES_WSC = 50
+NUM_VAL_EXAMPLES_WSC = 20
 WSC_SPLITS_DICT = {
     "train": f"train[:-{NUM_VAL_EXAMPLES_WSC}]",
     "validation": f"train[-{NUM_VAL_EXAMPLES_WSC}:]",
@@ -1866,7 +1866,7 @@ def _process_cb(example):
     }
 
 
-NUM_VAL_EXAMPLES_CB = 50
+NUM_VAL_EXAMPLES_CB = 20
 cb_source_args = {
     "tfds_name": "super_glue/cb:1.0.2",
     "splits": {
