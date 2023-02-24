@@ -84,6 +84,8 @@ def register_mixture(
     templates: typing.List[str],
     filter_fn: typing.Optional[typing.Callable[[str], bool]],
     use_all_templates: bool = True,
+    num_gist_tokens: typing.Optional[int] = None,
+    gist_position: typing.Optional[str] = None,
 ) -> str:
     """Selects appropriate task-template IDs and creates a mixture.
 
@@ -103,8 +105,20 @@ def register_mixture(
     Returns:
       The registered seqio mixture name.
     """
+    assert (
+        (num_gist_tokens is None and gist_position is None) or
+        (num_gist_tokens is not None and gist_position is not None)
+    ), "gist_position and num_gist_tokens must be specified together"
+    gist_added = (num_gist_tokens is not None)
 
-    final_mix_name = mix_prefix + task_suffix
+
+    if gist_added:
+        gist_suffix = f"_{num_gist_tokens}gist_{gist_position}pos"
+    else:
+        gist_suffix = ""
+
+    final_mix_name = mix_prefix + task_suffix + gist_suffix
+
     if check_mix_exists(final_mix_name):
         return final_mix_name
 
@@ -116,7 +130,7 @@ def register_mixture(
 
         # pylint: disable=g-complex-comprehension
         formatted_templates = [
-            template.format(**{"t_name": task_name, "suffix": task_suffix})
+            template.format(**{"t_name": task_name, "suffix": task_suffix + gist_suffix})
             for template in templates
         ]
         # pylint: enable=g-complex-comprehension
@@ -184,29 +198,36 @@ def register_submixture_variants(
     submix_task_names = DEFAULT_MIXTURE_TASKS[submix_key]
 
     # ZS Opt
-    submix_zs_opt_prefix = generate_submix_prefix(submix_key, zero_shot=True, opt=True)
-    zs_opt_mix_name = register_mixture(
-        mix_prefix=submix_zs_opt_prefix,
-        mix_ex_cap=submix_ex_caps[submix_key],
-        task_suffix=tsuffix,
-        tasks_obj=submix_task_names,
-        templates=ZS_OPT_TEMPLATES,
-        filter_fn=DEFAULT_MIXTURE_TASK_FILTERS[submix_key],
-        use_all_templates=False,
-    )
+    # Only construct gist token variants for zero-shot.
+    for num_gist_tokens in (2, 5, 10, 20):
+        for gist_position in ("random", "fixed"):
+            submix_zs_opt_prefix = generate_submix_prefix(submix_key, zero_shot=True, opt=True)
+            zs_opt_mix_name = register_mixture(
+                mix_prefix=submix_zs_opt_prefix,
+                mix_ex_cap=submix_ex_caps[submix_key],
+                task_suffix=tsuffix,
+                tasks_obj=submix_task_names,
+                templates=ZS_OPT_TEMPLATES,
+                filter_fn=DEFAULT_MIXTURE_TASK_FILTERS[submix_key],
+                use_all_templates=False,
+                num_gist_tokens=num_gist_tokens,
+                gist_position=gist_position,
+            )
 
-    # ZS NoOpt
-    submix_zs_noopt_prefix = generate_submix_prefix(
-        submix_key, zero_shot=True, opt=False
-    )
-    zs_noopt_mix_name = register_mixture(
-        mix_prefix=submix_zs_noopt_prefix,
-        mix_ex_cap=submix_ex_caps[submix_key],
-        task_suffix=tsuffix,
-        tasks_obj=submix_task_names,
-        templates=ZS_NOOPT_TEMPLATES,
-        filter_fn=DEFAULT_MIXTURE_TASK_FILTERS[submix_key],
-    )
+            # ZS NoOpt
+            submix_zs_noopt_prefix = generate_submix_prefix(
+                submix_key, zero_shot=True, opt=False
+            )
+            zs_noopt_mix_name = register_mixture(
+                mix_prefix=submix_zs_noopt_prefix,
+                mix_ex_cap=submix_ex_caps[submix_key],
+                task_suffix=tsuffix,
+                tasks_obj=submix_task_names,
+                templates=ZS_NOOPT_TEMPLATES,
+                filter_fn=DEFAULT_MIXTURE_TASK_FILTERS[submix_key],
+                num_gist_tokens=num_gist_tokens,
+                gist_position=gist_position,
+            )
 
     # FS Opt
     submix_fs_opt_prefix = generate_submix_prefix(submix_key, zero_shot=False, opt=True)

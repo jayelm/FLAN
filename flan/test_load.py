@@ -9,9 +9,10 @@ import seqio
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 tokenizer.add_special_tokens({"additional_special_tokens": ["<GIST>"]})
 
-# train_dataset = seqio.get_mixture_or_task("niv2-train_zsopt").get_dataset(
 train_dataset = seqio.get_mixture_or_task(
-    "train_tfds_natural_instructions_template_0_zero_shot"
+    # "palmflan_flan_zs_noopt_10gist_randompos",
+    "palmflan_niv2-eval_zs_noopt_5gist_fixedpos",
+    # "wsc_template_0to10_no_opt_zero_shot_2gist_fixedpos"
 ).get_dataset(
     sequence_length={"inputs": 1024, "targets": 128},
     split="train",
@@ -22,27 +23,5 @@ train_dataset = seqio.get_mixture_or_task(
 )
 
 
-# eval_dataset = seqio.get_mixture_or_task("niv2-eval_zsopt").get_dataset(
-#     sequence_length={"inputs": 1024, "targets": 128},
-#     split="train",
-#     shuffle=False,
-#     num_epochs=1,
-#     # shard_info=seqio.ShardInfo(index=0, num_shards=10),
-#     use_cached=False,
-#     seed=42,
-# )
-
-
-# Verify that train dataset includes only train tasks.
-seen_task_names = set()
-for i, ex in enumerate(tqdm.tqdm(train_dataset.as_numpy_iterator(), desc="Eval")):
-    if ex["task_name"] not in seen_task_names:
-        print(ex["task_name"])
-        seen_task_names.add(ex["task_name"])
-seen_task_names = {t.decode("utf-8") for t in seen_task_names}
-
-NATINST_DEFAULT_TEST_TASKS = set(NATINST_DEFAULT_TEST_TASKS)
-print("Seen tasks not in test tasks:", seen_task_names - NATINST_DEFAULT_TEST_TASKS)
-print("Test tasks not in seen tasks:", NATINST_DEFAULT_TEST_TASKS - seen_task_names)
-# Assert intersection of seen and test tasks is empty.
-assert not (seen_task_names & NATINST_DEFAULT_TEST_TASKS)
+for _, ex in zip(range(5), train_dataset.as_numpy_iterator()):
+    print(tokenizer.decode(ex['inputs']), tokenizer.decode(ex['targets']))

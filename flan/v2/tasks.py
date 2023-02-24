@@ -15,7 +15,7 @@
 """Register all tasks in task_configs.py."""
 import copy
 import random
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from flan.v2 import constants, few_shot
 from flan.v2 import preprocessors as prep
@@ -32,22 +32,50 @@ def register_zero_shot_task(
     zero_shot_name: str,
     zero_shot_config: task_configs.TaskConfig,
     patterns: List[Tuple[str, str]],
+    num_gist_tokens_options: Tuple[int] = (2, 5, 10, 20),
+    gist_position_options: Tuple[str] = ("random", "fixed"),
 ):
+    for num_gist_tokens in num_gist_tokens_options:
+        for gist_position in gist_position_options:
+            _register_single_zero_shot_task(
+                zero_shot_name,
+                zero_shot_config,
+                patterns,
+                num_gist_tokens,
+                gist_position,
+            )
+
+def _register_single_zero_shot_task(
+    zero_shot_name: str,
+    zero_shot_config: task_configs.TaskConfig,
+    patterns: List[Tuple[str, str]],
+    num_gist_tokens: Optional[int],
+    gist_position: Optional[str],
+):
+    if num_gist_tokens is None and gist_position is None:
+        # Don't add gist tokens.
+        num_gist_tokens = 0
+        gist_position = "fixed"
+        gist_suffix = ""
+    else:
+        assert num_gist_tokens is not None and gist_position is not None
+        gist_suffix = f"_{num_gist_tokens}gist_{gist_position}pos"
+
     if len(patterns) == 1:
         formatter = prep.get_formatter(
             patterns[0][0],
             patterns[0][1],
-            num_gist_tokens=10,
-            gist_position="random",
+            num_gist_tokens=num_gist_tokens,
+            gist_position=gist_position,
         )
     else:
         # This batch formatter applies many prompts to a single task.
         formatter = prep.get_batch_formatter(patterns,
-                                             num_gist_tokens=10,
-                                             gist_position="random")
+                                             num_gist_tokens=num_gist_tokens,
+                                             gist_position=gist_position)
     for suffix, output_features in constants.TRAIN_TASK_SUFFIXES_AND_FEATURES:
         seqio.TaskRegistry.add(
-            zero_shot_name + suffix,
+            zero_shot_name + suffix + gist_suffix,
             source=zero_shot_config.source,
             preprocessors=zero_shot_config.preprocessors
             + formatter
@@ -295,11 +323,11 @@ for task_config in task_configs.ALL_NIV2_TASK_CONFIGS:
         # The `_no_opt` version is not really used.
         # This is not necessarily five shot. We name it five_shot so that it matches
         # other few-shot task names. This makes it easy to use.
-        register_zero_shot_task(
-            f"{t_name}_template_mix_five_shot", config, mixed_templates
+        _register_single_zero_shot_task(
+            f"{t_name}_template_mix_five_shot", config, mixed_templates, None, None
         )
-        register_zero_shot_task(
-            f"{t_name}_template_mix_no_opt_five_shot", config, mixed_templates
+        _register_single_zero_shot_task(
+            f"{t_name}_template_mix_no_opt_five_shot", config, mixed_templates, None, None
         )
 
         # Build few-shot with non-deterministic templates.
